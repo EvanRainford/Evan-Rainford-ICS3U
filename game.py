@@ -1,84 +1,44 @@
-import pygame
+import pygame 
 import random
 
 pygame.init()
 
-screen = pygame.display.set_mode ((600, 600))
-pygame.display.set_caption("Tile frenzy")
-
+screen = pygame.display.set_mode((600, 600))
+pygame.display.set_caption("Dodge The Blocks")
 clock = pygame.time.Clock()
 
 white = (255, 255, 255)
-black = (0, 0, 0,)
-blue = (0, 150, 225)
-green = (0, 255, 0)
-tile_x = random.randint(0, 700)
-tile_y = random.randint(0, 500)
-tile_size = 100
+black = (0, 0, 0)
+red = (220,50, 50)
+blue = (0, 120, 225)
+
 font = pygame.font.SysFont(None, 40)
+small_font = pygame.font.SysFont(None, 30)
 
-tiles = []
-
-for row in range(3):
-   for col in range(3):
-        x = 120 + col * 125
-        y = 120 + row * 125
-        tiles.append(pygame.Rect(x, y, 110, 110))
-
-score = 0
-target = random.randint(0, 8)
-time_left = 30
-game_state = "start"
-start_time = 0
+player = pygame.Rect(275, 530, 50, 50)
+blocks = []
+spawn_timer = 0
+game_over = False
 running = True
 
+def reset_game():
+    player.x = 275
+    blocks.clear()
+    return 0, 0, False  
+
+def add_block():   
+    x = random.randint(0, 550)
+    blocks.append(pygame.Rect(x, -50, 50, 50))
+
 while running:
-    screen.fill(white)
+    clock.tick(60)
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
 
-        if event.type == pygame.MOUSEBUTTONDOWN:    
-           
-          if game_state == "start":
-            score = 0
-            target = random.randint(0, 8)
-            start_time = pygame.time.get_ticks()
-            game_state = "play" 
-
-        elif game_state == "over":
-            game_state = "start"
-
-if game_state == "start":
-    title = font.render("TILE FRENZY", True, black)
-    message = font.render("Click to Start", True, black)
-
-    screen.blit(title, (200, 200))
-    screen.blit(message, (190, 300))
-
-elif game_state == "play":
-    mouse_pos =pygame.mouse.get_pos()
-    if tiles[target].collidepoint(mouse_pos):
-        score += 1
-        target = random.randint(0, 8)
-    seconds = (pygame.time.get_ticks() - start_time) // 1000
-    time_left = 30 - seconds
-
-    if time_left <= 0:
-        time_left = 0
-        game_state = "over"
-
-    for i in range(9):
-        if i == target:
-            pygame.draw.rect(screen, green, tiles[i])
-        else:
-            pygame.draw.rect(screen, blue, tiles[i])
-    score_text = font.render("score: " + str(score), True, black)
-    time_text = font.render("time: " + str(time_left), True, black)
-    screen.blit(score_text, (10, 10))
-    screen.blit(time_text, (10, 50))
-
-    pygame.display.update()
-    clock.tick(60)
-
-    pygame.quit()
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_r and game_over:
+                score, spawn_timmer, game_over = reset_game()
+    if not game_over:
+        keys = pygame.key.get.pressed()
