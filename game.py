@@ -21,15 +21,17 @@ spawn_timer = 0
 score = 0
 game_over = False
 running = True
+block_speed = 5
 
 def reset_game():
     player.x = 275
     blocks.clear()
     return 0, 0, False  
 
-def add_block():   
+def add_block():
     x = random.randint(0, 550)
     blocks.append(pygame.Rect(x, -50, 50, 50))
+
 
 while running:
     clock.tick(60)
@@ -54,7 +56,8 @@ while running:
 
     if player.x > 550:
         player.x = 550
-
+    block_speed = 5 + (score // 10)
+    
     spawn_timer += 1
 
     if spawn_timer >= 30:
@@ -62,8 +65,9 @@ while running:
         spawn_timer = 0
 
     for block in blocks[:]:
-        block.y += 5
-
+        
+        block.y += block_speed
+        
         if block.y > 600:
             blocks.remove(block)
             score += 1
